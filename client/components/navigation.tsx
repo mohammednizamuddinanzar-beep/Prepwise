@@ -1,18 +1,18 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { 
-  Home, 
-  BookOpen, 
-  BarChart3, 
-  Sparkles, 
+import {
+  Home,
+  BookOpen,
+  BarChart3,
+  Sparkles,
   Zap,
   Menu,
   X
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -24,139 +24,183 @@ const navItems = [
 
 export function Navigation() {
   const pathname = usePathname()
+  const router = useRouter()
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("token")
+      const userId = localStorage.getItem("userId")
+      setIsLoggedIn(!!(token && userId))
+    }
+    checkAuth()
+    const handleStorageChange = () => checkAuth()
+    window.addEventListener("storage", handleStorageChange)
+    return () => window.removeEventListener("storage", handleStorageChange)
+  }, [])
+
+  const handleNavClick = (href: string) => {
+    setOpen(false)
+    router.push(href)
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("userId")
+    setIsLoggedIn(false)
+    setOpen(false)
+    router.push("/auth/login")
+  }
 
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
       className="fixed top-0 left-0 right-0 z-50"
     >
       <div className="glass-card mx-4 mt-4 md:mx-8">
         <nav className="flex items-center justify-between px-4 py-3 md:px-6">
+
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <motion.div 
-              className="relative"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FF4D00] to-[#FF0055] flex items-center justify-center glow-orange">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <motion.div 
-                className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#FF4D00] to-[#FF0055] opacity-50 blur-md"
-                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.3, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </motion.div>
-            <span className="text-xl font-bold gradient-text-streak hidden sm:block">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FF4D00] to-[#FF0055] flex items-center justify-center">
+              <Zap className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold hidden sm:block">
               PrepWise
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href
               return (
                 <Link key={item.href} href={item.href}>
-                  <motion.div
+                  <div
                     className={cn(
-                      "relative px-4 py-2 rounded-lg flex items-center gap-2 transition-colors",
-                      isActive 
-                        ? "text-[#FF4D00]" 
-                        : "text-muted-foreground hover:text-foreground"
+                      "px-4 py-2 rounded-lg flex items-center gap-2 transition-colors",
+                      isActive ? "text-[#FF4D00] bg-[#FF4D00]/10" : "text-gray-400 hover:text-white"
                     )}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
                   >
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeNav"
-                        className="absolute inset-0 bg-[#FF4D00]/10 rounded-lg border border-[#FF4D00]/20"
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      />
-                    )}
-                    <item.icon className="w-4 h-4 relative z-10" />
-                    <span className="text-sm font-medium relative z-10">{item.label}</span>
-                  </motion.div>
+                    <item.icon className="w-4 h-4" />
+                    <span className="hidden lg:block">{item.label}</span>
+                  </div>
                 </Link>
               )
             })}
           </div>
 
-          {/* User XP Badge */}
-          <div className="hidden md:flex items-center gap-3">
-            <motion.div 
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-pulse" />
-              <span className="text-sm font-medium text-[#8B5CF6]">Level 12</span>
-              <span className="text-xs text-muted-foreground">2,450 XP</span>
-            </motion.div>
+          {/* Auth Section - Desktop */}
+          <div className="flex items-center gap-2">
+            {isLoggedIn ? (
+              <div className="relative">
+                <button
+                  onClick={() => setOpen(!open)}
+                  className="w-10 h-10 bg-gradient-to-br from-[#FF4D00] to-[#FF0055] rounded-full text-white text-sm font-bold flex items-center justify-center shadow-lg hover:shadow-xl transition-all"
+                  title="User Menu"
+                >
+                  U
+                </button>
+
+                {open && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                    className="absolute right-0 mt-2 w-48 bg-black/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl z-50"
+                  >
+                    <button
+                      onClick={() => handleNavClick("/profile")}
+                      className="block w-full text-left px-4 py-3 hover:bg-white/10 transition-colors text-sm"
+                    >
+                      👤 Profile
+                    </button>
+                    <button
+                      onClick={() => handleNavClick("/dashboard")}
+                      className="block w-full text-left px-4 py-3 hover:bg-white/10 transition-colors text-sm"
+                    >
+                      📊 Dashboard
+                    </button>
+                    <button
+                      onClick={() => handleNavClick("/settings")}
+                      className="block w-full text-left px-4 py-3 hover:bg-white/10 transition-colors text-sm"
+                    >
+                      ⚙️ Settings
+                    </button>
+                    <div className="border-t border-white/20 my-1"></div>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 transition-colors text-sm"
+                    >
+                      🚪 Logout
+                    </button>
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              <Link 
+                href="/auth/login" 
+                className="bg-gradient-to-r from-[#FF4D00] to-[#FF0055] text-white px-4 py-2 rounded-lg hover:from-[#ff5e1a] hover:to-[#ff3d2e] transition-all font-medium shadow-lg hover:shadow-xl text-sm"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
-          <motion.button
-            className="md:hidden p-2 rounded-lg hover:bg-white/5"
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            whileTap={{ scale: 0.95 }}
           >
             {mobileMenuOpen ? (
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Menu className="w-6 h-6" />
             )}
-          </motion.button>
+          </button>
+
         </nav>
 
         {/* Mobile Menu */}
-        <motion.div
-          initial={false}
-          animate={{ 
-            height: mobileMenuOpen ? "auto" : 0,
-            opacity: mobileMenuOpen ? 1 : 0 
-          }}
-          className="md:hidden overflow-hidden"
-        >
-          <div className="px-4 pb-4 space-y-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <Link 
-                  key={item.href} 
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <motion.div
-                    className={cn(
-                      "px-4 py-3 rounded-lg flex items-center gap-3 transition-colors",
-                      isActive 
-                        ? "bg-[#FF4D00]/10 text-[#FF4D00] border border-[#FF4D00]/20" 
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                    )}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <item.icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </motion.div>
-                </Link>
-              )
-            })}
-            
-            {/* Mobile XP Badge */}
-            <div className="pt-2 border-t border-white/5 mt-2">
-              <div className="flex items-center gap-2 px-4 py-2">
-                <div className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-pulse" />
-                <span className="text-sm font-medium text-[#8B5CF6]">Level 12</span>
-                <span className="text-xs text-muted-foreground">2,450 XP</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="md:hidden bg-black/80 backdrop-blur-md border-t border-white/10 px-4 pb-4"
+          >
+            {navItems.map((item) => (
+              <Link 
+                key={item.href} 
+                href={item.href}
+                className="block py-3 px-2 rounded-lg flex items-center gap-3 text-gray-300 hover:text-white hover:bg-white/10 transition-all"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <item.icon className="w-5 h-5 flex-shrink-0" />
+                {item.label}
+              </Link>
+            ))}
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="w-full mt-2 py-3 px-2 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all flex items-center gap-3"
+              >
+                🚪 Logout
+              </button>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="w-full block mt-2 py-3 px-2 bg-gradient-to-r from-[#FF4D00] to-[#FF0055] text-white rounded-lg hover:from-[#ff5e1a] hover:to-[#ff3d2e] transition-all text-center font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Login
+              </Link>
+            )}
+          </motion.div>
+        )}
       </div>
     </motion.header>
   )
