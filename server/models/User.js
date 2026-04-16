@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema(
 
     completedLessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
     enrolledCourses:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+
+    lastSubmission: { type: Date },
   },
   { timestamps: true }
 );

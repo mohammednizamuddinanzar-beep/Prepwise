@@ -4,10 +4,10 @@ import { motion } from "framer-motion"
 import { 
   Zap, 
   ArrowRight, 
-  Play, 
   Users,
   BookOpen,
-  Target
+  Target,
+  Sparkles
 } from "lucide-react"
 import Link from "next/link"
 
@@ -106,16 +106,16 @@ export function HeroSection() {
             </motion.button>
           </Link>
 
-          <motion.button
-            className="flex items-center gap-2 px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-foreground font-medium text-lg transition-colors"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-              <Play className="w-4 h-4 ml-0.5" />
-            </div>
-            Watch Demo
-          </motion.button>
+          <Link href="/recommendations">
+            <motion.button
+              className="flex items-center gap-2 px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-foreground font-medium text-lg transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Sparkles className="w-5 h-5 text-purple-400" />
+              Generate AI Course
+            </motion.button>
+          </Link>
         </motion.div>
 
         {/* Stats */}
