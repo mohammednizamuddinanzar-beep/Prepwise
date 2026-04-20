@@ -38,13 +38,6 @@ const features = [
     color: "#06B6D4",
     gradient: "from-[#06B6D4] to-[#10B981]"
   },
-  {
-    icon: Sparkles,
-    title: "Smart Recommendations",
-    description: "Get AI-based recommendations for what to learn next.",
-    color: "#FF0055",
-    gradient: "from-[#FF0055] to-[#8B5CF6]"
-  }
 ]
 
 const containerVariants = {

@@ -4,18 +4,9 @@ import { motion } from "framer-motion"
 import { 
   Zap, 
   ArrowRight, 
-  Users,
-  BookOpen,
-  Target,
   Sparkles
 } from "lucide-react"
 import Link from "next/link"
-
-const stats = [
-  { label: "Active Learners", value: "12,459", icon: Users },
-  { label: "Modules Completed", value: "89,234", icon: BookOpen },
-  { label: "Avg. Streak", value: "14 days", icon: Target },
-]
 
 export function HeroSection() {
   return (
@@ -118,36 +109,7 @@ export function HeroSection() {
           </Link>
         </motion.div>
 
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto"
-        >
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-              className="glass-card p-6 text-center group hover:border-white/10 transition-colors"
-              whileHover={{ y: -4 }}
-            >
-              <div className="flex items-center justify-center mb-3">
-                <div className="p-2 rounded-lg bg-[#FF4D00]/10 group-hover:bg-[#FF4D00]/20 transition-colors">
-                  <stat.icon className="w-5 h-5 text-[#FF4D00]" />
-                </div>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold gradient-text-streak mb-1">
-                {stat.value}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+
 
         {/* Floating elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
