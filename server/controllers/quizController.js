@@ -16,7 +16,7 @@ const submitQuiz = async (req, res) => {
     });
 
     const total = questions.length;
-    const score = total > 0 ? ((correct / total) * 100).toFixed(2) : 0;
+    const score = total > 0 ? Math.floor((correct / total) * 100) : 0;
 
     // Gamification: Update user XP, level, streak
     const user = await User.findById(userId);
@@ -24,8 +24,8 @@ const submitQuiz = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const scoreNum = parseFloat(score);
-    const newXp = user.xp + scoreNum;
+    const scoreNum = Math.floor(score);
+    const newXp = Math.floor(user.xp) + scoreNum;
     const newLevel = Math.floor(newXp / 100) + 1;
 
     // Streak logic

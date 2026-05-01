@@ -48,8 +48,9 @@ export default function DashboardPage() {
     )
   }
 
-  const xpToNextLevel = 100 - (user ? user.xp % 100 : 0)
-  const xpProgress = user ? user.xp % 100 : 0
+  const xp = user ? Math.floor(user.xp) : 0
+  const xpToNextLevel = 100 - (xp % 100)
+  const xpProgress = Math.min(xp % 100, 100)
 
   return (
     <main className="min-h-screen bg-[#0B0E14] pb-12">
@@ -88,15 +89,15 @@ export default function DashboardPage() {
               <div className="p-6 bg-white/5 rounded-xl border border-white/10 mb-8">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-gray-300">XP Progress to Level {user.level + 1}</span>
-                  <span className="text-sm text-orange-400 font-semibold">{user.xp} XP total</span>
+                  <span className="text-sm text-orange-400 font-semibold">{xp} XP total</span>
                 </div>
-                <div className="w-full bg-white/10 rounded-full h-3 mb-2">
+                <div className="w-full bg-white/10 rounded-full h-3 mb-2 overflow-hidden">
                   <div
                     className="h-3 rounded-full bg-gradient-to-r from-[#FF4D00] to-[#FF0055] transition-all"
-                    style={{ width: `${Math.min(xpProgress, 100)}%` }}
+                    style={{ width: `${xpProgress}%` }}
                   />
                 </div>
-                <p className="text-xs text-gray-400">{xpToNextLevel} XP needed for next level</p>
+                <p className="text-xs text-gray-400">{Math.floor(xpToNextLevel)} XP needed for next level</p>
               </div>
 
               {/* Stats Grid */}
@@ -104,7 +105,7 @@ export default function DashboardPage() {
                 <StatCard
                   icon={<Zap className="w-6 h-6 text-orange-400" />}
                   label="Total XP"
-                  value={user.xp.toString()}
+                  value={xp.toString()}
                   color="text-orange-400"
                   bg="from-orange-500/10 to-transparent"
                 />
